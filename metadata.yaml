@@ -1,0 +1,12 @@
+name: apache-bigtop-datanode
+summary: HDFS storage node (DataNode) for Apache Hadoop platform
+maintainer: bigdata-dev <bigdata-dev@canonical.com>
+description: >
+  Hadoop is a software platform that lets one easily write and
+  run applications that process vast amounts of data.
+
+  This charm manages the storage node (DataNode) for HDFS.
+tags: ["applications", "bigdata", "bigtop", "hadoop", "apache"]
+provides:
+  namenode:
+    interface: dfs-slave

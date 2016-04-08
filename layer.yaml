@@ -1,0 +1,19 @@
+repo: git@github.com:juju-solutions/layer-apache-hadoop-datanode.git
+includes:
+  - 'layer:apache-bigtop-base'
+  - 'layer:hadoop-ganglia'
+  - 'interface:dfs-slave'
+options:
+  hadoop-base:
+    ports:
+        # Ports that need to be exposed, overridden, or manually specified.
+        # Only expose ports serving a UI or external API (i.e., namenode and
+        # resourcemanager).  Communication among units within the cluster does
+        # not need ports to be explicitly opened.
+        dn_webapp_http:
+            port: 50075
+            exposed_on: 'datanode'
+        # TODO: support SSL
+        #dn_webapp_https:
+        #    port: 50475
+        #    exposed_on: 'datanode'
