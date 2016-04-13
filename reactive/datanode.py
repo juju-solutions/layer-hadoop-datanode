@@ -8,9 +8,6 @@ from jujubigdata import utils
 @when_not('datanode.started')
 def start_datanode(namenode):
     bigtop = get_bigtop_base()
-    utils.install_ssh_key('hdfs', namenode.ssh_key())
-    utils.manage_etc_hosts()
-    # TODO add direct invocation to the init.d script
     utils.run_as('root', 'service', 'hadoop-hdfs-datanode', 'start')
 
     bigtop.open_ports('datanode')
@@ -28,9 +25,6 @@ def stop_datanode():
 
 def restart_datanode(namenode):
     bigtop = get_bigtop_base()
-    utils.install_ssh_key('hdfs', namenode.ssh_key())
-    utils.manage_etc_hosts()
-    # TODO add direct invocation to the init.d script
     utils.run_as('root', 'service', 'hadoop-hdfs-datanode', 'restart')
 
     bigtop.open_ports('datanode')
