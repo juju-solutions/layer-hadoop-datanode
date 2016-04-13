@@ -1,7 +1,7 @@
 repo: git@github.com:juju-solutions/layer-apache-hadoop-datanode.git
 includes:
   - 'layer:apache-bigtop-base'
-  - 'layer:hadoop-ganglia'
+#  - 'layer:hadoop-ganglia'
   - 'interface:dfs-slave'
 options:
   hadoop-base:

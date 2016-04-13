@@ -3,13 +3,13 @@ from charms.reactive import when, when_not
 from charmhelpers.core import hookenv
 
 
-@when('hadoop.installed')
+@when('bigtop.installed')
 @when_not('namenode.joined')
 def blocked():
     hookenv.status_set('blocked', 'Waiting for relation to NameNode')
 
 
-@when('hadoop.installed', 'namenode.joined')
+@when('bigtop.installed', 'namenode.joined')
 @when_not('namenode.spec.mismatch', 'namenode.ready')
 def waiting(namenode):  # pylint: disable=unused-argument
     hookenv.status_set('waiting', 'Waiting for NameNode')
