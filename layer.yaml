@@ -4,7 +4,7 @@ includes:
 #  - 'layer:hadoop-ganglia'
   - 'interface:dfs-slave'
 options:
-  hadoop-base:
+  apache-bigtop-base:
     ports:
         # Ports that need to be exposed, overridden, or manually specified.
         # Only expose ports serving a UI or external API (i.e., namenode and
