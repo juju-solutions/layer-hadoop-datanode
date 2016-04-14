@@ -1,6 +1,5 @@
 from charms.reactive import when, when_not, set_state, remove_state
-from charms.layer.apache_bigtop_base import get_bigtop_base
-from charms.layer.apache_bigtop_datanode import get_layer_opts
+from charms.layer.apache_bigtop_base import get_bigtop_base, get_layer_opts
 from charmhelpers.core import host, hookenv
 
 
