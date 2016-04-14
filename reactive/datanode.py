@@ -29,7 +29,7 @@ def install_hadoop(namenode):
 def start_datanode():
     hookenv.status_set('maintenance', 'starting datanode')
     host.service_start('hadoop-hdfs-datanode')
-    for port in get_layer_opts.exposed_ports('datanode'):
+    for port in get_layer_opts().exposed_ports('datanode'):
         hookenv.open_port(port)
     set_state('datanode.started')
     hookenv.status_set('active', 'ready')
@@ -39,7 +39,7 @@ def start_datanode():
 @when_not('namenode.joined')
 def stop_datanode():
     hookenv.status_set('maintenance', 'stopping datanode')
-    for port in get_layer_opts.exposed_ports('datanode'):
+    for port in get_layer_opts().exposed_ports('datanode'):
         hookenv.close_port(port)
     host.service_stop('hadoop-hdfs-datanode')
     remove_state('datanode.started')
