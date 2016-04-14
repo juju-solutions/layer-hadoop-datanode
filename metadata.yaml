@@ -1,6 +1,6 @@
 name: apache-bigtop-datanode
-summary: HDFS storage node (DataNode) for Apache Hadoop platform
-maintainer: bigdata-dev <bigdata-dev@canonical.com>
+summary: HDFS storage node (DataNode) for Apache Bigtop platform
+maintainer: Juju Big Data <bigdata@lists.ubuntu.com>
 description: >
   Hadoop is a software platform that lets one easily write and
   run applications that process vast amounts of data.
