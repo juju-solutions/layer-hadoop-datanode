@@ -23,6 +23,7 @@ def install_hadoop(namenode):
         hookenv.status_set('waiting', 'waiting for namenode to become ready')
 
 
+@when('namenode.joined')
 @when('datanode.installed')
 @when_not('datanode.started')
 def start_datanode():
