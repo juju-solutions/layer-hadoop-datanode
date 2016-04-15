@@ -26,7 +26,7 @@ def install_hadoop(namenode):
 @when('namenode.joined')
 @when('datanode.installed')
 @when_not('datanode.started')
-def start_datanode():
+def start_datanode(namenode):
     hookenv.status_set('maintenance', 'starting datanode')
     host.service_start('hadoop-hdfs-datanode')
     for port in get_layer_opts().exposed_ports('datanode'):
