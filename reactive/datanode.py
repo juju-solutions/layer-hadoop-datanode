@@ -8,7 +8,7 @@ def blocked():
     hookenv.status_set('blocked', 'waiting for namenode relation')
 
 
-@when('namenode.joined')
+@when('namenode.joined', 'puppet.available')
 @when_not('datanode.installed')
 def install_hadoop(namenode):
     '''Install only if the namenode has sent its FQDN.'''
