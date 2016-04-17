@@ -5,6 +5,7 @@ includes:
   - 'interface:dfs-slave'
 options:
   apache-bigtop-base:
+    bigtop_component_list: 'hadoop'
     ports:
         # Ports that need to be exposed, overridden, or manually specified.
         # Only expose ports serving a UI or external API (i.e., namenode and
