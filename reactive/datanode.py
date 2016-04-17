@@ -14,9 +14,11 @@ def install_hadoop(namenode):
     '''Install only if the namenode has sent its FQDN.'''
     if namenode.namenodes():
         hookenv.status_set('maintenance', 'installing datanode')
-        hostname = namenode.namenodes()[0]
+        nn_host = namenode.namenodes()[0]
         bigtop = get_bigtop_base()
-        bigtop.install(NN=hostname)
+        hosts = {'namenode': nn_host}
+        bigtop.install(hosts=hosts, roles='datanode')
+        bigtop.setup_hdfs
         set_state('datanode.installed')
         hookenv.status_set('maintenance', 'datanode installed')
     else:
