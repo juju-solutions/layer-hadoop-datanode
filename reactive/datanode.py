@@ -45,4 +45,7 @@ def stop_datanode():
         hookenv.close_port(port)
     host.service_stop('hadoop-hdfs-datanode')
     remove_state('datanode.started')
+    # Remove the installed state so we can re-configure the installation
+    # if/when a new namenode comes along in the future.
+    remove_state('datanode.installed')
     hookenv.status_set('maintenance', 'datanode stopped')
