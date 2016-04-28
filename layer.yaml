@@ -1,16 +1,13 @@
 repo: git@github.com:juju-solutions/layer-apache-bigtop-datanode.git
 includes:
   - 'layer:apache-bigtop-base'
-#  - 'layer:hadoop-ganglia'
   - 'interface:dfs-slave'
 options:
   apache-bigtop-base:
-    bigtop_component_list: 'hadoop'
+    users:
+      ubuntu:
+        groups: ['hadoop']
     ports:
-        # Ports that need to be exposed, overridden, or manually specified.
-        # Only expose ports serving a UI or external API (i.e., namenode and
-        # resourcemanager).  Communication among units within the cluster does
-        # not need ports to be explicitly opened.
         dn_webapp_http:
             port: 50075
             exposed_on: 'datanode'
