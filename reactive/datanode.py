@@ -3,11 +3,6 @@ from charms.layer.apache_bigtop_base import get_bigtop_base, get_layer_opts
 from charmhelpers.core import host, hookenv
 
 
-@when_not('namenode.joined')
-def blocked():
-    hookenv.status_set('blocked', 'missing required namenode relation')
-
-
 @when('puppet.available', 'namenode.joined')
 @when_not('apache-bigtop-datanode.installed')
 def install_datanode(namenode):
@@ -25,8 +20,6 @@ def install_datanode(namenode):
         bigtop.install(hosts=hosts, roles='datanode')
         set_state('apache-bigtop-datanode.installed')
         hookenv.status_set('maintenance', 'datanode installed')
-    else:
-        hookenv.status_set('waiting', 'waiting for namenode fqdn')
 
 
 @when('apache-bigtop-datanode.installed', 'namenode.joined')
@@ -34,9 +27,7 @@ def install_datanode(namenode):
 def send_nn_spec(namenode):
     """Send our datanode spec so the namenode can become ready."""
     bigtop = get_bigtop_base()
-    # Send DN spec (must match NN spec for 'namenode.ready' to be set)
     namenode.set_local_spec(bigtop.spec())
-    hookenv.status_set('waiting', 'waiting for namenode to become ready')
 
 
 @when('apache-bigtop-datanode.installed', 'namenode.ready')
@@ -55,7 +46,7 @@ def start_datanode(namenode):
     bigtop.setup_hdfs()
 
     set_state('apache-bigtop-datanode.started')
-    hookenv.status_set('active', 'ready')
+    hookenv.status_set('maintenance', 'datanode started')
 
 
 @when('apache-bigtop-datanode.started')
