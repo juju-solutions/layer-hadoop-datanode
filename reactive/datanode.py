@@ -1,9 +1,9 @@
 from charms.reactive import when, when_not, set_state, remove_state
-from charms.layer.apache_bigtop_base import get_bigtop_base, get_layer_opts
+from charms.layer.apache_bigtop_base import Bigtop, get_layer_opts
 from charmhelpers.core import host, hookenv
 
 
-@when('puppet.available', 'namenode.joined')
+@when('bigtop.available', 'namenode.joined')
 @when_not('apache-bigtop-datanode.installed')
 def install_datanode(namenode):
     """Install if the namenode has sent its FQDN.
@@ -15,9 +15,10 @@ def install_datanode(namenode):
     if namenode.namenodes():
         hookenv.status_set('maintenance', 'installing datanode')
         nn_host = namenode.namenodes()[0]
-        bigtop = get_bigtop_base()
+        bigtop = Bigtop()
         hosts = {'namenode': nn_host}
-        bigtop.install(hosts=hosts, roles='datanode')
+        bigtop.render_site_yaml(hosts=hosts, roles='datanode')
+        bigtop.trigger_puppet()
         set_state('apache-bigtop-datanode.installed')
         hookenv.status_set('maintenance', 'datanode installed')
 
@@ -26,7 +27,7 @@ def install_datanode(namenode):
 @when_not('namenode.ready')
 def send_nn_spec(namenode):
     """Send our datanode spec so the namenode can become ready."""
-    bigtop = get_bigtop_base()
+    bigtop = Bigtop()
     namenode.set_local_spec(bigtop.spec())
 
 
@@ -42,7 +43,7 @@ def start_datanode(namenode):
         hookenv.open_port(port)
 
     # Create a /user/ubuntu dir in HDFS (this is safe to run multiple times).
-    bigtop = get_bigtop_base()
+    bigtop = Bigtop()
     bigtop.setup_hdfs()
 
     set_state('apache-bigtop-datanode.started')
