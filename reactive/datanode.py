@@ -34,6 +34,7 @@ def install_datanode(namenode):
 @when('apache-bigtop-datanode.pending')
 @when_not('apache-bigtop-base.puppet_queued')
 def finish_install_datanode():
+    remove_state('apache-bigtop-datanode.pending')
     set_state('apache-bigtop-datanode.installed')
     installed = is_state('apache-bigtop-datanode.installed')
     action = 'installed' if not installed else 'configured'
