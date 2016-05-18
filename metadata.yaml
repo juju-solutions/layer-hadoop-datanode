@@ -1,4 +1,4 @@
-name: apache-bigtop-datanode
+name: hadoop-datanode
 summary: HDFS storage node (DataNode) for Apache Bigtop platform
 maintainer: Juju Big Data <bigdata@lists.ubuntu.com>
 description: >
