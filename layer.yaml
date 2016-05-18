@@ -1,4 +1,4 @@
-repo: git@github.com:juju-solutions/layer-apache-bigtop-datanode.git
+repo: git@github.com:juju-solutions/layer-hadoop-datanode.git
 includes:
   - 'layer:apache-bigtop-base'
   - 'interface:dfs-slave'
