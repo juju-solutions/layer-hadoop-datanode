@@ -2,6 +2,7 @@ from charms.reactive import when, when_not, set_state, remove_state, is_state
 from charms.reactive.helpers import data_changed
 from charms.layer.apache_bigtop_base import Bigtop, get_layer_opts
 from charmhelpers.core import host, hookenv
+from jujubigdata import utils
 
 
 @when('bigtop.available', 'namenode.joined')
@@ -62,7 +63,16 @@ def start_datanode(namenode):
 
     # Create a /user/ubuntu dir in HDFS (this is safe to run multiple times).
     bigtop = Bigtop()
-    bigtop.setup_hdfs()
+    if not bigtop.check_hdfs_setup():
+        try:
+            utils.wait_for_hdfs(30)
+            bigtop.setup_hdfs()
+        except utils.TimeoutError:
+            # HDFS is not yet available or is still in safe mode, so we can't
+            # do the initial setup (create dirs); skip setting the state below
+            # so that, on the next hook, we try again.
+            hookenv.status_set('waiting', 'waiting on hdfs')
+            return
 
     set_state('apache-bigtop-datanode.started')
     hookenv.status_set('maintenance', 'datanode started')
