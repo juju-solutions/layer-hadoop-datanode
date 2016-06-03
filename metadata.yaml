@@ -10,3 +10,5 @@ tags: ["applications", "bigdata", "bigtop", "hadoop", "apache"]
 provides:
   namenode:
     interface: dfs-slave
+  ignite:
+    interface: ignite-hadoop
