@@ -19,6 +19,16 @@ def install_datanode(namenode):
         installed = is_state('apache-bigtop-datanode.installed')
         action = 'installing' if not installed else 'configuring'
         hookenv.status_set('maintenance', '%s datanode' % action)
+
+        # More than one namenodes means HA. Handle extra configurations
+        extra = {}
+        if len(namenodes) > 1:
+            extra["hadoop::common_hdfs::ha"] = "manual"
+            extra["bigtop::standby_head_node"] = namenodes[1]
+            extra["hadoop::common_hdfs::hadoop_ha_nameservice_id"] = "ha-nn-uri"
+            extra["hadoop_cluster_node::hadoop_namenode_uri"] = "hdfs://%{hiera('hadoop_ha_nameservice_id')}:8020"
+            extra["hadoop::common_hdfs::hadoop_namenode_host"] = [namenodes[0], namenodes[1]]
+
         bigtop = Bigtop()
         bigtop.render_site_yaml(
             hosts={
@@ -27,7 +37,9 @@ def install_datanode(namenode):
             roles=[
                 'datanode',
             ],
+            overrides=extra,
         )
+
         bigtop.queue_puppet()
         set_state('apache-bigtop-datanode.pending')
 
