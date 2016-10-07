@@ -1,6 +1,8 @@
 from charms.reactive import when, when_not, set_state, remove_state, is_state
 from charms.reactive.helpers import data_changed
-from charms.layer.apache_bigtop_base import Bigtop, get_layer_opts
+from charms.layer.apache_bigtop_base import (
+    Bigtop, get_hadoop_version, get_layer_opts
+)
 from charmhelpers.core import host, hookenv
 from jujubigdata import utils
 
@@ -75,6 +77,7 @@ def start_datanode(namenode):
             return
 
     set_state('apache-bigtop-datanode.started')
+    hookenv.application_version_set(get_hadoop_version())
     hookenv.status_set('maintenance', 'datanode started')
 
 
