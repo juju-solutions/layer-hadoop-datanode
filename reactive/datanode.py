@@ -56,37 +56,54 @@ def send_nn_spec(namenode):
 @when_not('apache-bigtop-datanode.started')
 def start_datanode(namenode):
     hookenv.status_set('maintenance', 'starting datanode')
-    # NB: service should be started by install, but this may be handy in case
-    # we have something that removes the .started state in the future. Also
-    # note we restart here in case we modify conf between install and now.
-    host.service_restart('hadoop-hdfs-datanode')
-    for port in get_layer_opts().exposed_ports('datanode'):
-        hookenv.open_port(port)
+    # NB: service should be started by install, but we want to verify it is
+    # running before we set the .started state and open ports. We always
+    # restart here, which may seem heavy-handed. However, restart works
+    # whether the service is currently started or stopped. It also ensures the
+    # service is using the most current config.
+    started = host.service_restart('hadoop-hdfs-datanode')
+    if started:
+        # Create a /user/ubuntu dir in HDFS (this is safe to run multiple times).
+        bigtop = Bigtop()
+        if not bigtop.check_hdfs_setup():
+            try:
+                utils.wait_for_hdfs(30)
+                bigtop.setup_hdfs()
+            except utils.TimeoutError:
+                # HDFS is not yet available or is still in safe mode, so we can't
+                # do the initial setup (create dirs); skip setting the .started
+                # state below so that we try again on the next hook.
+                hookenv.status_set('waiting', 'waiting on hdfs')
+                return
 
-    # Create a /user/ubuntu dir in HDFS (this is safe to run multiple times).
-    bigtop = Bigtop()
-    if not bigtop.check_hdfs_setup():
-        try:
-            utils.wait_for_hdfs(30)
-            bigtop.setup_hdfs()
-        except utils.TimeoutError:
-            # HDFS is not yet available or is still in safe mode, so we can't
-            # do the initial setup (create dirs); skip setting the state below
-            # so that, on the next hook, we try again.
-            hookenv.status_set('waiting', 'waiting on hdfs')
-            return
-
-    set_state('apache-bigtop-datanode.started')
-    hookenv.application_version_set(get_hadoop_version())
-    hookenv.status_set('maintenance', 'datanode started')
+        # HDFS is ready. Open ports and set .started, status, and app version
+        for port in get_layer_opts().exposed_ports('datanode'):
+            hookenv.open_port(port)
+        set_state('apache-bigtop-datanode.started')
+        hookenv.status_set('maintenance', 'datanode started')
+        hookenv.application_version_set(get_hadoop_version())
+    else:
+        hookenv.log('DataNode failed to start')
+        hookenv.status_set('blocked', 'datanode failed to start')
+        remove_state('apache-bigtop-datanode.started')
+        for port in get_layer_opts().exposed_ports('datanode'):
+            hookenv.close_port(port)
 
 
 @when('apache-bigtop-datanode.started')
 @when_not('namenode.ready')
 def stop_datanode():
     hookenv.status_set('maintenance', 'stopping datanode')
+    stopped = host.service_stop('hadoop-hdfs-datanode')
+    if stopped:
+        hookenv.status_set('maintenance', 'datanode stopped')
+    else:
+        hookenv.log('DataNode failed to stop')
+        hookenv.status_set('blocked', 'datanode failed to stop')
+
+    # Even if the service failed to stop, we want to treat it as stopped so
+    # other apps do not attempt to interact with it. Remove .started and
+    # close our ports.
+    remove_state('apache-bigtop-datanode.started')
     for port in get_layer_opts().exposed_ports('datanode'):
         hookenv.close_port(port)
-    host.service_stop('hadoop-hdfs-datanode')
-    remove_state('apache-bigtop-datanode.started')
-    hookenv.status_set('maintenance', 'datanode stopped')
