@@ -10,3 +10,5 @@ tags: []
 provides:
   namenode:
     interface: dfs-slave
+  ignite:
+    interface: ignite-hadoop

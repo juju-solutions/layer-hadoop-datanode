@@ -2,6 +2,7 @@ repo: git@github.com:juju-solutions/layer-hadoop-datanode.git
 includes:
   - 'layer:apache-bigtop-base'
   - 'interface:dfs-slave'
+  - 'interface:ignite-hadoop'
 options:
   apache-bigtop-base:
     users:
