@@ -10,3 +10,7 @@ tags: []
 provides:
   namenode:
     interface: dfs-slave
+storage:
+  hdfs:
+    type: filesystem
+    location: /data
